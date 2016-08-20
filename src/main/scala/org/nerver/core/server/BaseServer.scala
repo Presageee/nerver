@@ -1,13 +1,14 @@
 package org.nerver.core.server
 
-import com.sun.net.httpserver.HttpServer
 import io.netty.bootstrap.ServerBootstrap
-import io.netty.channel.{ChannelOption, EventLoopGroup}
+import io.netty.channel.ChannelOption
 import io.netty.channel.nio.NioEventLoopGroup
 import io.netty.channel.socket.nio.NioServerSocketChannel
-import io.netty.handler.codec.http.HttpResponseDecoder
 import io.netty.handler.logging.{LogLevel, LoggingHandler}
+import org.nerver.core.HandlerScanner
+import org.nerver.core.annotation.Method
 import org.nerver.core.handler.HttpServerHandlerInitializer
+
 
 /**
   * Created by LJT on 2016/8/11.
@@ -23,7 +24,7 @@ class BaseServer(p: Integer) {
     val bossGroup = new NioEventLoopGroup()
     val workGroup = new NioEventLoopGroup()
     try {
-      val serverBootstrap = new ServerBootstrap();
+      val serverBootstrap = new ServerBootstrap()
       serverBootstrap.option[java.lang.Integer](ChannelOption.SO_BACKLOG, 1024)
       //serverBootstrap.option(ChannelOption.TCP_NODELAY, true)
       //serverBootstrap.option(ChannelOption.SO_KEEPALIVE, true)
@@ -43,8 +44,19 @@ class BaseServer(p: Integer) {
 }
 
 object BaseServer {
+  val getMethodMap: scala.collection.mutable.HashMap[String, java.lang.reflect.Method] = scala.collection.mutable.HashMap()
+  val postMethodMap: scala.collection.mutable.HashMap[String, java.lang.reflect.Method] = scala.collection.mutable.HashMap()
+  val getHandlerMap: scala.collection.mutable.HashMap[String, Any] = scala.collection.mutable.HashMap()
+  val postHandlerMap: scala.collection.mutable.HashMap[String, Any] = scala.collection.mutable.HashMap()
+  val typeMap = scala.collection.mutable.HashMap(Method.GET -> getHandlerMap, Method.POST -> postHandlerMap)
+  val methodTypeMap = scala.collection.mutable.HashMap(Method.GET -> getMethodMap, Method.POST -> postMethodMap)
+
   def main(args: Array[String]): Unit = {
-    val baseServer = new BaseServer(8080)
+    val url = Thread.currentThread().getContextClassLoader().getResource("org/nerver/core/annotation")
+    val str = url.getPath()
+    val handlerScanner = new HandlerScanner(args(1))
+    handlerScanner.init()
+    val baseServer = new BaseServer(Integer.parseInt(args(0)))
     baseServer.init()
   }
 }
