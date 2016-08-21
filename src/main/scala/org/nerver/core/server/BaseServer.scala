@@ -26,8 +26,8 @@ class BaseServer(p: Integer) {
     try {
       val serverBootstrap = new ServerBootstrap()
       serverBootstrap.option[java.lang.Integer](ChannelOption.SO_BACKLOG, 1024)
-      //serverBootstrap.option(ChannelOption.TCP_NODELAY, true)
-      //serverBootstrap.option(ChannelOption.SO_KEEPALIVE, true)
+      serverBootstrap.childOption[java.lang.Boolean](ChannelOption.TCP_NODELAY, true)
+      serverBootstrap.childOption[java.lang.Boolean](ChannelOption.SO_KEEPALIVE, true)
 
       serverBootstrap.group(bossGroup, workGroup)
           .channel(classOf[NioServerSocketChannel])
