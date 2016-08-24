@@ -35,7 +35,8 @@ class HttpHandler extends ChannelInboundHandlerAdapter{
       import scala.collection.JavaConverters._
       val se = entry.asScala
       se.foreach(e => map.put(e.getKey, e.getValue.get(0)))
-      val instanceObj = BaseServer.typeMap(Method.GET) (route)
+      val clazz = BaseServer.typeMap(Method.GET) (route)
+      val instanceObj = clazz.newInstance()
       val invokeResult = BaseServer.getMethodMap(route).invoke(instanceObj, map).asInstanceOf[String]
       val fullResponse = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(invokeResult.getBytes("UTF-8")))
       fullResponse.headers().set("Content-Type", "text/plain")
@@ -60,7 +61,8 @@ class HttpHandler extends ChannelInboundHandlerAdapter{
         import scala.collection.JavaConverters._
         val se = entry.asScala
         se.foreach(e => map.put(e.getKey, e.getValue.get(0)))
-        val instanceObj = BaseServer.typeMap(Method.POST) (route)
+        val clazz = BaseServer.typeMap(Method.POST) (route)
+        val instanceObj = clazz.newInstance()//thread safe
         val invokeResult = BaseServer.postMethodMap(route).invoke(instanceObj, map).asInstanceOf[String]
         val fullResponse = new DefaultFullHttpResponse(HTTP_1_1, OK, Unpooled.wrappedBuffer(invokeResult.getBytes("UTF-8")))
         fullResponse.headers().set("Content-Type", "text/plain")

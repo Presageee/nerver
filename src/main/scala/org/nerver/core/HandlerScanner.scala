@@ -35,14 +35,14 @@ class HandlerScanner(pkg: String) {
           val clazz = Class.forName(className)
           val an = clazz.getAnnotation(classOf[Handler])
           if (null != an) {
-            val obj = clazz.newInstance()
+            //val obj = clazz.newInstance()
             val methods = clazz.getDeclaredMethods
             methods.foreach(m => {
               Try{
                 val methodAnnotation = m.getAnnotation(classOf[Mapping])
                 val route = methodAnnotation.value()
                 val methodType = methodAnnotation.method()
-                BaseServer.typeMap(methodType) += (route -> obj)
+                BaseServer.typeMap(methodType) += (route -> clazz)
                 BaseServer.methodTypeMap(methodType) += (route -> m)
               }
             })

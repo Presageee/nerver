@@ -46,14 +46,12 @@ class BaseServer(p: Integer) {
 object BaseServer {
   val getMethodMap: scala.collection.mutable.HashMap[String, java.lang.reflect.Method] = scala.collection.mutable.HashMap()
   val postMethodMap: scala.collection.mutable.HashMap[String, java.lang.reflect.Method] = scala.collection.mutable.HashMap()
-  val getHandlerMap: scala.collection.mutable.HashMap[String, Any] = scala.collection.mutable.HashMap()
-  val postHandlerMap: scala.collection.mutable.HashMap[String, Any] = scala.collection.mutable.HashMap()
+  val getHandlerMap: scala.collection.mutable.HashMap[String, java.lang.Class[_]] = scala.collection.mutable.HashMap()
+  val postHandlerMap: scala.collection.mutable.HashMap[String, java.lang.Class[_]] = scala.collection.mutable.HashMap()
   val typeMap = scala.collection.mutable.HashMap(Method.GET -> getHandlerMap, Method.POST -> postHandlerMap)
   val methodTypeMap = scala.collection.mutable.HashMap(Method.GET -> getMethodMap, Method.POST -> postMethodMap)
 
   def main(args: Array[String]): Unit = {
-    val url = Thread.currentThread().getContextClassLoader().getResource("org/nerver/core/annotation")
-    val str = url.getPath()
     val handlerScanner = new HandlerScanner(args(1))
     handlerScanner.init()
     val baseServer = new BaseServer(Integer.parseInt(args(0)))
